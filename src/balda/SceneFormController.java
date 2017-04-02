@@ -1,7 +1,17 @@
 package balda;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,9 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 /**
- * TODO: Загрузку из текстового файла и выбор случайного слова при запуске
  * TODO: После ввода буквы надо будет указать или ввести слово
- * TODO: Редактор формы - JavaFX Scene Builder
  */
 public class SceneFormController implements Initializable {
 
@@ -36,27 +44,103 @@ public class SceneFormController implements Initializable {
     @FXML
     private Label label;
 
+    @FXML
+    private TextField word;
+
+    /**
+     * Словарь
+     */
+    private List<String> lines;
+
+    /**
+     * Размеры поля
+     */
+    private int rows;
+    private int cols;
+
+    /**
+     * Загрузка словаря
+     */
+    public void loadLibrary() {
+
+        String checkLibrary = "Существует: " + (new File("Library.cfg")).exists();
+        System.out.println(checkLibrary);
+
+        try {
+            lines = Files.readAllLines(Paths.get("Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.mcpj.ml/Balda/Library.cfg"
+            System.out.println("Количество строк: " + lines.size());
+            System.out.println(lines);
+
+            Random gen = new Random();
+            do {
+                int idx = gen.nextInt(lines.size());
+                firstWord = lines.get(idx).trim().toUpperCase();
+            } while (firstWord.length() == 0);
+        } catch (IOException ex) {
+            Logger.getLogger(SceneFormController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    public void checkWord() {
+        Letter letter = getLetter();
+        if (letter == null) {
+            return;
+        }
+
+        // Получаем слово для проверки
+        String s = word.getText().trim().toUpperCase();
+        if (lines.contains(s)) {
+            System.out.println("Нашли слово \"" + s + "\" в словаре");
+
+            if (s.contains(letter.text)) {
+                System.out.println("\"" + letter.text + "\" есть в слове \"" + s + "\"");
+
+                gameCells[letter.row][letter.col].setVisible(false);
+                fixedLetter(letter.text.charAt(0), rows, cols)
+                ;
+            }
+
+        } else {
+            System.out.println("Не нашли слово \"" + s + "\" в словаре");
+        }
+    }
+
+    private Letter getLetter() {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (gameCells[r][c] != null) {
+                    String text = gameCells[r][c].getText().trim().toUpperCase();
+                    if (text.length() > 0) {
+                        System.out.println("Вы ввели: " + text
+                                + " в строку " + r + " и в столбец " + c);
+                        return new Letter(text, r, c);
+                    }
+                }
+            }
+        }
+        System.out.println("Введите букву");
+        return null; // Ничего не нашли
+    }
+
     /**
      * Начальное слово
      */
-    String firstWord = "привет";
+    private String firstWord;
 
     /**
      * Игровое поле (пустые клетки - пробелы), слова записаны по буквам
      */
-    char[][] game;
+    private char[][] game;
 
-    @FXML
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
-    }
+    private TextField[][] gameCells;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        int rows = 8; //getRowCount(gameField);
-        int cols = 11; //getColCount(gameField);
+        rows = 8; //getRowCount(gameField);
+        cols = 11; //getColCount(gameField);
         System.out.println("rows = " + rows + "  cols = " + cols);
+        loadLibrary();
         // Заполняем массив пробелами
         game = new char[rows][cols];
         for (char[] cs : game) {
@@ -64,19 +148,14 @@ public class SceneFormController implements Initializable {
                 cs[j] = ' ';
             }
         }
+        gameCells = new TextField[rows][cols];
         // Скрываем прототипы
         prototype.setVisible(false);
         textPrototype.setVisible(false);
         // Переводим всё в CAPS LOCK
         String capsLockWord = firstWord.toUpperCase();
         for (int i = 0; i < capsLockWord.length(); i++) {
-            Label l = new Label("" + capsLockWord.charAt(i));
-            l.setFont(prototype.getFont());
-            l.setAlignment(Pos.CENTER);
-            l.setPrefWidth(prototype.getPrefWidth());
-            int col = i + 1;
-            gameField.add(l, col, 2);
-            game[2][col] = capsLockWord.charAt(i);
+            fixedLetter(capsLockWord.charAt(i), 2, i + 1);
         }
         // Добавляем текстовые поля для ввода
         for (int row = 0; row < rows; row++) {
@@ -88,9 +167,19 @@ public class SceneFormController implements Initializable {
                     TextField tf = new TextField();
                     tf.setFont(textPrototype.getFont());
                     gameField.add(tf, col, row);
+                    gameCells[row][col] = tf;
                 }
             }
         }
+    }
+
+    private void fixedLetter(final char symbol, int row, int col) {
+        Label l = new Label("" + symbol);
+        l.setFont(prototype.getFont());
+        l.setAlignment(Pos.CENTER);
+        l.setPrefWidth(prototype.getPrefWidth());
+        gameField.add(l, col, row);
+        game[row][col] = symbol;
     }
 
     private int getRowCount(GridPane pane) {

@@ -10,19 +10,20 @@ import javafx.stage.Stage;
  * Запуск формы игры
  */
 public class Balda extends Application {
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         // Задаём заголовок формы
         stage.setTitle("Игра 'Балда'");
-        
+
         Parent root = FXMLLoader.load(getClass().getResource("SceneForm.fxml"));
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("game.css");
-        
+
         stage.setScene(scene);
         stage.show();
+
     }
 
     /**
@@ -31,5 +32,5 @@ public class Balda extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }
