@@ -1,18 +1,5 @@
 package balda;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -20,11 +7,24 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * TODO: После ввода буквы надо будет указать или ввести слово
  */
 public class SceneFormController implements Initializable {
+
+    @FXML
+    public Pane Menu;
 
     /**
      * Прототип для всех Label (правильные настройки штрифтов)
@@ -57,17 +57,36 @@ public class SceneFormController implements Initializable {
      */
     private int rows;
     private int cols;
+    /**
+     * Начальное слово
+     */
+    private String firstWord;
+    /**
+     * Игровое поле (пустые клетки - пробелы), слова записаны по буквам
+     */
+    private char[][] game;
+    private TextField[][] gameCells;
 
     /**
      * Загрузка словаря
      */
     public void loadLibrary() {
-
-        String checkLibrary = "Существует: " + (new File("Library.cfg")).exists();
-        System.out.println(checkLibrary);
-
         try {
-            lines = Files.readAllLines(Paths.get("Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.mcpj.ml/Balda/Library.cfg"
+            // Загрузка словаря с сайта URL
+            URL url = new URL("http://SFiles.mcpj.ml/Balda/Library.cfg");
+            lines = new ArrayList<>();
+            try (Scanner scan = new Scanner(url.openStream(), "UTF-8")) {
+                while (scan.hasNextLine()) {
+                    String word = scan.nextLine().trim();
+                    if (word.length() == 0 || !Character.isLetter(word.charAt(0)))
+                        continue;
+                    lines.add(word);
+                }
+            }
+            // Если не удалось скачать с сайта => пробуем прочитать локальный файл
+            if (lines.size() == 0) {
+                lines = Files.readAllLines(Paths.get("Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.mcpj.ml/Balda/Library.cfg"
+            }
             System.out.println("Количество строк: " + lines.size());
             System.out.println(lines);
 
@@ -123,20 +142,11 @@ public class SceneFormController implements Initializable {
         return null; // Ничего не нашли
     }
 
-    /**
-     * Начальное слово
-     */
-    private String firstWord;
-
-    /**
-     * Игровое поле (пустые клетки - пробелы), слова записаны по буквам
-     */
-    private char[][] game;
-
-    private TextField[][] gameCells;
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        gameField.getStyleClass().add("cell");
+        gameField.setGridLinesVisible(true);
+
         rows = 8; //getRowCount(gameField);
         cols = 11; //getColCount(gameField);
         System.out.println("rows = " + rows + "  cols = " + cols);
