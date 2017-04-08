@@ -70,7 +70,7 @@ public class SceneFormController implements Initializable {
     /**
      * Загрузка словаря
      */
-    public void loadLibrary() {
+    private void loadLibrary() {
         try {
             // Загрузка словаря с сайта URL
             URL url = new URL("http://SFiles.mcpj.ml/Balda/Library.cfg");
@@ -115,9 +115,14 @@ public class SceneFormController implements Initializable {
             if (s.contains(letter.text)) {
                 System.out.println("\"" + letter.text + "\" есть в слове \"" + s + "\"");
 
-                gameCells[letter.row][letter.col].setVisible(false);
-                fixedLetter(letter.text.charAt(0), rows, cols)
-                ;
+                // Получаем клеточку с буквой
+                TextField field = gameCells[letter.row][letter.col];
+                field.setVisible(false); // Скрываем её
+                field.setText(""); // Очищаем текст
+                fixedLetter(letter.text.charAt(0), letter.row, letter.col);
+
+                // Расставляем вокруг пустые клеточки если их нет
+                addLetterTextFields();
             }
 
         } else {
@@ -167,17 +172,28 @@ public class SceneFormController implements Initializable {
         for (int i = 0; i < capsLockWord.length(); i++) {
             fixedLetter(capsLockWord.charAt(i), 2, i + 1);
         }
-        // Добавляем текстовые поля для ввода
+        addLetterTextFields();
+    }
+
+    /**
+     * Добавляем текстовые поля для ввода
+     */
+    private void addLetterTextFields() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 if (game[row][col] == ' ' && ((row > 0 && game[row - 1][col] != ' ')
                         || (col > 0 && game[row][col - 1] != ' ')
                         || (row < rows - 1 && game[row + 1][col] != ' ')
                         || (col < cols - 1 && game[row][col + 1] != ' '))) {
-                    TextField tf = new TextField();
-                    tf.setFont(textPrototype.getFont());
-                    gameField.add(tf, col, row);
-                    gameCells[row][col] = tf;
+                    if (gameCells[row][col] == null) {
+                        TextField tf = new TextField();
+                        tf.setFont(textPrototype.getFont());
+                        gameField.add(tf, col, row);
+                        gameCells[row][col] = tf;
+                    } else {
+                        // Очищаем если уже есть
+                        gameCells[row][col].setText("");
+                    }
                 }
             }
         }
