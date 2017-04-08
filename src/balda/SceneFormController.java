@@ -115,19 +115,51 @@ public class SceneFormController implements Initializable {
             if (s.contains(letter.text)) {
                 System.out.println("\"" + letter.text + "\" есть в слове \"" + s + "\"");
 
-                // Получаем клеточку с буквой
-                TextField field = gameCells[letter.row][letter.col];
-                field.setVisible(false); // Скрываем её
-                field.setText(""); // Очищаем текст
-                fixedLetter(letter.text.charAt(0), letter.row, letter.col);
+                boolean[][] used = new boolean[rows][cols];
+                game[letter.row][letter.col] = letter.text.charAt(0);
+                if (wordFound(s, 0, letter.row, letter.col, used)) {
 
-                // Расставляем вокруг пустые клеточки если их нет
-                addLetterTextFields();
+                    // Получаем клеточку с буквой
+                    TextField field = gameCells[letter.row][letter.col];
+                    field.setVisible(false); // Скрываем её
+                    field.setText(""); // Очищаем текст
+                    fixedLetter(letter.text.charAt(0), letter.row, letter.col);
+
+                    // Расставляем вокруг пустые клеточки если их нет
+                    addLetterTextFields();
+                } else {
+                    System.out.println("Word not found " + s);
+                    game[letter.row][letter.col] = ' ';
+                }
             }
 
         } else {
             System.out.println("Не нашли слово \"" + s + "\" в словаре");
         }
+    }
+
+    private boolean wordFound(String s, int pos, int row, int col, boolean[][] used) {
+        // Если клетка за пределами => не нашли
+        if (row < 0 || col < 0 || row >= rows || col >= cols)
+            return false;
+        if (used[row][col])
+            return false;
+        // Если буква не подходит, то не нашли
+        if (s.charAt(pos) != game[row][col])
+            return false;
+        // Если буква подходит и это последняя буква, то возвращаем true
+        if ((s.charAt(pos) == game[row][col])
+                && (pos == s.length() - 1)) {
+            System.out.println("Нашли слово, последняя буква: '" + s.charAt(pos) + "': " + row + " x " + col);
+            return true;
+        }
+        used[row][col] = true;
+        System.out.println("Нашли букву '" + s.charAt(pos) + "': " + row + " x " + col);
+        // Проверяем все соседние буквы
+        return wordFound(s, pos + 1, row + 1, col, used) ||
+                wordFound(s, pos + 1, row - 1, col, used) ||
+                wordFound(s, pos + 1, row, col + 1, used) ||
+                wordFound(s, pos + 1, row, col - 1, used);
     }
 
     private Letter getLetter() {

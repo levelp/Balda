@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane id="AnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="669.0" prefWidth="800.0"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="AnchorPane" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="669.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="balda.SceneFormController">
     <children>
         <GridPane fx:id="gameField" layoutX="15.0" layoutY="12.0" prefHeight="520.0" prefWidth="749.0">
@@ -52,7 +48,7 @@
             <children>
                 <TextField fx:id="word" layoutX="14.0" layoutY="42.0" promptText="Слово"/>
                 <Button layoutX="179.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#checkWord"
-                        text="Проверить"/>
+                        text="Проверить" textFill="#1d6e52" textOverrun="CLIP"/>
                 <Button layoutX="686.0" layoutY="69.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0"
                         text="Настройки"/>
             </children>
