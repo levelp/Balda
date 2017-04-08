@@ -84,9 +84,11 @@ public class SceneFormController implements Initializable {
                 }
             }
             // Если не удалось скачать с сайта => пробуем прочитать локальный файл
+            /*
             if (lines.size() == 0) {
                 lines = Files.readAllLines(Paths.get("Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.mcpj.ml/Balda/Library.cfg"
             }
+            */
             System.out.println("Количество строк: " + lines.size());
             System.out.println(lines);
 
