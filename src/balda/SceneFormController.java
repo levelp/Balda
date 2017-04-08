@@ -63,11 +63,8 @@ public class SceneFormController implements Initializable {
      */
     public void loadLibrary() {
 
-        String checkLibrary = "Существует: " + (new File("Library.cfg")).exists();
-        System.out.println(checkLibrary);
-
         try {
-            lines = Files.readAllLines(Paths.get("Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.mcpj.ml/Balda/Library.cfg"
+            lines = Files.readAllLines(Paths.get("http://SFiles.MCPJ.ml/Balda/Library.cfg"), Charset.forName("UTF-8")); // Заменить на сервер "http://SFiles.MCPJ.ml/Balda/Library.cfg"
             System.out.println("Количество строк: " + lines.size());
             System.out.println(lines);
 
