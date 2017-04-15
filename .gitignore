@@ -16,5 +16,5 @@ build
 dist
 nbproject/private
 
-.idea
+.idea/workspace.xml
 Library.cfg
