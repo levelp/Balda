@@ -165,6 +165,7 @@ public class SceneFormController implements Initializable {
     }
 
     private Letter getLetter() {
+        Letter letter = null;
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 if (gameCells[r][c] != null) {
@@ -172,13 +173,15 @@ public class SceneFormController implements Initializable {
                     if (text.length() > 0) {
                         System.out.println("Вы ввели: " + text
                                 + " в строку " + r + " и в столбец " + c);
-                        return new Letter(text, r, c);
+                        letter = new Letter(text, r, c);
+                        game[r][c] = text.charAt(0);
                     }
                 }
             }
         }
-        System.out.println("Введите букву");
-        return null; // Ничего не нашли
+        if (letter == null) // Ничего не нашли
+            System.out.println("Введите букву");
+        return letter;
     }
 
     @Override
