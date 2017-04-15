@@ -115,9 +115,19 @@ public class SceneFormController implements Initializable {
                 System.out.println("\"" + letter.text + "\" есть в слове \"" + s + "\"");
 
                 boolean[][] used = new boolean[rows][cols];
-                game[letter.row][letter.col] = letter.text.charAt(0);
-                if (wordFound(s, 0, letter.row, letter.col, used)) {
+                char curLetter = letter.text.charAt(0);
+                game[letter.row][letter.col] = curLetter;
 
+                boolean found = false;
+                for (int r = 0; r < rows && !found; r++) {
+                    for (int c = 0; c < cols && !found; c++) {
+                        // Ищем слово с каждой клеточки
+                        if (wordFound(s, 0, r, c, used)) {
+                            found = true;
+                        }
+                    }
+                }
+                if (found) {
                     // Получаем клеточку с буквой
                     TextField field = gameCells[letter.row][letter.col];
                     field.setVisible(false); // Скрываем её
@@ -172,6 +182,10 @@ public class SceneFormController implements Initializable {
                 if (gameCells[r][c] != null) {
                     String text = gameCells[r][c].getText().trim().toUpperCase();
                     if (text.length() > 0) {
+                        // Исправляем маленькие буквы на большие и убираем пробелы
+                        if (!text.equals(gameCells[r][c].getText()))
+                            gameCells[r][c].setText(text);
+
                         System.out.println("Вы ввели: " + text
                                 + " в строку " + r + " и в столбец " + c);
                         return new Letter(text, r, c);
