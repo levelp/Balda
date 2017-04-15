@@ -18,6 +18,7 @@ nbproject/private
 
 # Idea build
 out
-
 .idea/workspace.xml
+# В этом проекте Kotlin не используется
+.idea/kotlinc.xml
 Library.cfg

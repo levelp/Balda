@@ -11,9 +11,6 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -164,8 +161,12 @@ public class SceneFormController implements Initializable {
                 wordFound(s, pos + 1, row, col - 1, used);
     }
 
+    /**
+     * Получение одной ввовь введённой буквы
+     *
+     * @return новая буква (одна)
+     */
     private Letter getLetter() {
-        Letter letter = null;
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 if (gameCells[r][c] != null) {
@@ -173,15 +174,13 @@ public class SceneFormController implements Initializable {
                     if (text.length() > 0) {
                         System.out.println("Вы ввели: " + text
                                 + " в строку " + r + " и в столбец " + c);
-                        letter = new Letter(text, r, c);
-                        game[r][c] = text.charAt(0);
+                        return new Letter(text, r, c);
                     }
                 }
             }
         }
-        if (letter == null) // Ничего не нашли
-            System.out.println("Введите букву");
-        return letter;
+        System.out.println("Введите букву");
+        return null;
     }
 
     @Override
